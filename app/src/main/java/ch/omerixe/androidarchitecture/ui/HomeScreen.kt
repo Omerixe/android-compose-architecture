@@ -1,9 +1,9 @@
 package ch.omerixe.androidarchitecture.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -13,7 +13,18 @@ fun HomeScreen(
     onDetailClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
-    Scaffold() {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Home") },
+                navigationIcon = {
+                    IconButton(onClick = { /* doSomething() */ }) {
+                        Icon(Icons.Filled.Menu, contentDescription = null)
+                    }
+                }
+            )
+        }
+    ) {
         Column() {
             Text(text = "HomeScreen!")
             OutlinedButton(onClick = onOverViewClick) {

@@ -111,16 +111,19 @@ private fun NavGraphBuilder.addOverviewGraph(
         startDestination = LeafScreen.Overview.createRoute(Screen.Overview),
     ) {
         composable(route = LeafScreen.Overview.createRoute(Screen.Overview)) {
-            OverviewScreen {
-                navController.navigate(LeafScreen.Detail.createRoute(Screen.Overview, "abc"))
-            }
+            OverviewScreen(
+                onButtonClick = {
+                    navController.navigate(LeafScreen.Detail.createRoute(Screen.Overview, "abc"))
+                },
+                navigateBack = { navController.popBackStack() }
+            )
         }
         composable(route = LeafScreen.Detail.createRoute(Screen.Overview),
             arguments = listOf(
                 navArgument("detailId") { type = NavType.StringType }
             )) {
             val detailScreenViewModel: DetailScreenViewModel = viewModel()
-            DetailScreen(viewModel = detailScreenViewModel)
+            DetailScreen(viewModel = detailScreenViewModel) { navController.popBackStack() }
         }
     }
 }
