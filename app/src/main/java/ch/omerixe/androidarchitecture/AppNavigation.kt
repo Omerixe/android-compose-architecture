@@ -1,14 +1,14 @@
 package ch.omerixe.androidarchitecture
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import ch.omerixe.androidarchitecture.ui.DetailScreen
-import ch.omerixe.androidarchitecture.ui.HomeScreen
-import ch.omerixe.androidarchitecture.ui.LoginScreen
-import ch.omerixe.androidarchitecture.ui.OverviewScreen
+import ch.omerixe.androidarchitecture.ui.*
 
 internal sealed class Screen(val route: String) {
     object Home : Screen("home")
@@ -35,26 +35,26 @@ private sealed class LeafScreen(
 @Composable
 internal fun AppNavigation(
     navController: NavHostController,
+    mainViewModel: MainViewModel
 ) {
-    // Todo: This would be somewhere else in a ViewModel
-    // Todo: LoggedIn should be checked in every screen that needs a log-in
-    var loggedIn by remember { mutableStateOf(false) }
 
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route,
     ) {
-        addHomeGraph(navController = navController, isLoggedIn = { loggedIn }) { loggedIn = false }
-        addLoginGraph(navController = navController) {
-            loggedIn = true
-        }
+        addHomeGraph(
+            navController = navController,
+            loggedIn = mainViewModel.loggedIn,
+            logOut = mainViewModel::logOut
+        )
+        addLoginGraph(navController = navController, logIn = mainViewModel::logIn)
         addOverviewGraph(navController = navController)
     }
 }
 
 private fun NavGraphBuilder.addHomeGraph(
     navController: NavHostController,
-    isLoggedIn: () -> Boolean, //This should be a state to get rid of the function
+    loggedIn: MutableState<Boolean>,
     logOut: () -> Unit
 ) {
     navigation(
@@ -62,9 +62,8 @@ private fun NavGraphBuilder.addHomeGraph(
         startDestination = LeafScreen.Home.createRoute(Screen.Home)
     ) {
         composable(route = LeafScreen.Home.createRoute(Screen.Home)) {
-            val loggedIn = isLoggedIn()
-            LaunchedEffect(loggedIn) {
-                if (!loggedIn) {
+            LaunchedEffect(loggedIn.value) {
+                if (!loggedIn.value) {
                     navController.navigate(Screen.Login.route)
                 }
             }
@@ -120,7 +119,8 @@ private fun NavGraphBuilder.addOverviewGraph(
             arguments = listOf(
                 navArgument("detailId") { type = NavType.StringType }
             )) {
-            DetailScreen()
+            val detailScreenViewModel: DetailScreenViewModel = viewModel()
+            DetailScreen(viewModel = detailScreenViewModel)
         }
     }
 }

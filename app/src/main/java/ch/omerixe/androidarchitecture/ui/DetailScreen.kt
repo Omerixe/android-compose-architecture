@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DetailScreen() {
+fun DetailScreen(viewModel: DetailScreenViewModel) {
     Scaffold(
 
     ) {
@@ -21,5 +21,5 @@ fun DetailScreen() {
 @Preview(showBackground = true)
 @Composable
 fun DetailScreenPreview() {
-    DetailScreen()
+    DetailScreen(DetailScreenViewModel())
 }
