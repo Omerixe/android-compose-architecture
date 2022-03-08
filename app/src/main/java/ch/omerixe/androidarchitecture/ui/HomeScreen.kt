@@ -11,14 +11,15 @@ import androidx.compose.ui.tooling.preview.Preview
 fun HomeScreen(
     onOverViewClick: () -> Unit,
     onDetailClick: () -> Unit,
-    onLogoutClick: () -> Unit
+    onLogoutClick: () -> Unit,
+    onMenuClicked: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Home") },
                 navigationIcon = {
-                    IconButton(onClick = { /* doSomething() */ }) {
+                    IconButton(onClick = { onMenuClicked() }) {
                         Icon(Icons.Filled.Menu, contentDescription = null)
                     }
                 }
@@ -44,5 +45,5 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen({}, {}, {})
+    HomeScreen({}, {}, {}, {})
 }
