@@ -1,14 +1,13 @@
 package ch.omerixe.androidarchitecture
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material.DrawerState
+import androidx.compose.material.DrawerValue
+import androidx.compose.material.ModalDrawer
+import androidx.compose.material.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
@@ -17,10 +16,10 @@ import androidx.navigation.compose.navigation
 import ch.omerixe.androidarchitecture.ui.*
 import kotlinx.coroutines.launch
 
-internal sealed class Screen(val route: String) {
-    object Home : Screen("home")
-    object Overview : Screen("overview")
-    object Login : Screen("login")
+internal sealed class Screen(val title: String, val route: String) {
+    object Home : Screen("Home", "home")
+    object Overview : Screen("Overview", "overview")
+    object Login : Screen("Login", "login")
 }
 
 private sealed class LeafScreen(
@@ -50,14 +49,33 @@ internal fun AppNavigation(
 
     ModalDrawer(
         drawerContent = {
-            Button(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = 16.dp),
-                onClick = { scope.launch { drawerState.close() } },
-                content = { Text("Close Drawer") }
+            Drawer(
+                screens = listOf(
+                    Screen.Home,
+                    Screen.Overview
+                ),
+                onDestinationClicked = { route ->
+                    scope.launch {
+                        drawerState.close()
+                    }
+                    if (route == Screen.Home.route) {
+                        navController.popBackStack(
+                            route = LeafScreen.Home.createRoute(Screen.Home),
+                            inclusive = false,
+                            saveState = true
+                        )
+                    } else {
+                        navController.navigate(route = route) {
+                            navController.graph.startDestinationRoute?.let {
+                                popUpTo(route = LeafScreen.Home.createRoute(Screen.Home)) {
+                                    inclusive = false
+                                }
+                            }
+                            launchSingleTop = true
+                        }
+                    }
+                }
             )
-
         },
         drawerState = drawerState
     ) {
@@ -72,7 +90,7 @@ internal fun AppNavigation(
                 drawerState = drawerState,
             )
             addLoginGraph(navController = navController, logIn = mainViewModel::logIn)
-            addOverviewGraph(navController = navController)
+            addOverviewGraph(navController = navController, drawerState = drawerState)
         }
     }
 
@@ -97,9 +115,6 @@ private fun NavGraphBuilder.addHomeGraph(
                 }
             }
             HomeScreen(
-                onOverViewClick = {
-                    navController.navigate(Screen.Overview.route)
-                },
                 onDetailClick = {
                     //Todo: Is there a better way to do this?
                     navController.navigate(Screen.Overview.route)
@@ -136,18 +151,20 @@ private fun NavGraphBuilder.addLoginGraph(
 }
 
 private fun NavGraphBuilder.addOverviewGraph(
-    navController: NavController
+    navController: NavController,
+    drawerState: DrawerState,
 ) {
     navigation(
         route = Screen.Overview.route,
         startDestination = LeafScreen.Overview.createRoute(Screen.Overview),
     ) {
         composable(route = LeafScreen.Overview.createRoute(Screen.Overview)) {
+            val scope = rememberCoroutineScope()
             OverviewScreen(
                 onButtonClick = {
                     navController.navigate(LeafScreen.Detail.createRoute(Screen.Overview, "abc"))
                 },
-                navigateBack = { navController.popBackStack() }
+                onMenuClicked = { scope.launch { drawerState.open() } }
             )
         }
         composable(route = LeafScreen.Detail.createRoute(Screen.Overview),

@@ -9,7 +9,6 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun HomeScreen(
-    onOverViewClick: () -> Unit,
     onDetailClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onMenuClicked: () -> Unit,
@@ -28,9 +27,6 @@ fun HomeScreen(
     ) {
         Column() {
             Text(text = "HomeScreen!")
-            OutlinedButton(onClick = onOverViewClick) {
-                Text(text = "Click me (Overview)!")
-            }
             OutlinedButton(onClick = onDetailClick) {
                 Text(text = "Click me (Detail)!")
             }
@@ -45,5 +41,5 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen({}, {}, {}, {})
+    HomeScreen({}, {}, {})
 }
