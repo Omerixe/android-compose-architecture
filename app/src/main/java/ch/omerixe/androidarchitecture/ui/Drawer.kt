@@ -6,6 +6,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ch.omerixe.androidarchitecture.Screen
 
@@ -13,7 +14,8 @@ import ch.omerixe.androidarchitecture.Screen
 internal fun Drawer(
     modifier: Modifier = Modifier,
     screens: List<Screen>,
-    onDestinationClicked: (route: String) -> Unit
+    activeRoute: () -> String?,
+    onDestinationClicked: (screen: Screen) -> Unit
 ) {
     Column(
         modifier
@@ -21,12 +23,14 @@ internal fun Drawer(
             .padding(start = 24.dp, top = 48.dp)
     ) {
         screens.forEach { screen ->
+            val isActiveScreen = activeRoute()?.contains(screen.route)
             Spacer(Modifier.height(24.dp))
             Text(
                 text = screen.title,
                 style = MaterialTheme.typography.h4,
+                color = if (isActiveScreen == true) Color.Green else MaterialTheme.colors.primary,
                 modifier = Modifier.clickable {
-                    onDestinationClicked(screen.route)
+                    onDestinationClicked(screen)
                 }
             )
         }

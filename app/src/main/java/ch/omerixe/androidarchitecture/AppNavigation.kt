@@ -4,10 +4,7 @@ import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.ModalDrawer
 import androidx.compose.material.rememberDrawerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
@@ -46,6 +43,9 @@ internal fun AppNavigation(
     //Todo: Is this the right place to save these values?
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var currentScreen: Screen by remember {
+        mutableStateOf(Screen.Home)
+    }
 
     ModalDrawer(
         drawerContent = {
@@ -54,18 +54,20 @@ internal fun AppNavigation(
                     Screen.Home,
                     Screen.Overview
                 ),
-                onDestinationClicked = { route ->
+                activeRoute = { currentScreen.route },
+                onDestinationClicked = { screen ->
                     scope.launch {
                         drawerState.close()
+                        currentScreen = screen
                     }
-                    if (route == Screen.Home.route) {
+                    if (screen.route == Screen.Home.route) {
                         navController.popBackStack(
                             route = LeafScreen.Home.createRoute(Screen.Home),
                             inclusive = false,
                             saveState = true
                         )
                     } else {
-                        navController.navigate(route = route) {
+                        navController.navigate(route = screen.route) {
                             navController.graph.startDestinationRoute?.let {
                                 popUpTo(route = LeafScreen.Home.createRoute(Screen.Home)) {
                                     inclusive = false
