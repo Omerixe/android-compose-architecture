@@ -23,7 +23,7 @@ fun HomeScreen(
                 title = { Text(text = "Home") },
                 navigationIcon = {
                     IconButton(onClick = { onMenuClicked() }) {
-                        Icon(Icons.Filled.Menu, contentDescription = null)
+                        Icon(Icons.Filled.Menu, contentDescription = "Open Menu")
                     }
                 }
             )
