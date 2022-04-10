@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import ch.omerixe.androidarchitecture.ui.*
+import ch.omerixe.androidarchitecture.ui.web.WebScreen
 import kotlinx.coroutines.launch
 
 internal sealed class Screen(val title: String, val route: String) {
@@ -27,6 +28,7 @@ private sealed class LeafScreen(
     object Home : LeafScreen("home")
     object Overview : LeafScreen("overview")
     object Login : LeafScreen("login")
+    object Web : LeafScreen("web")
 
     object Detail : LeafScreen("detail/{detailId}") {
         fun createRoute(root: Screen, detailId: String): String {
@@ -111,6 +113,7 @@ private fun NavGraphBuilder.addHomeGraph(
         composable(route = LeafScreen.Home.createRoute(Screen.Home)) {
             val scope = rememberCoroutineScope()
 
+
             LaunchedEffect(loggedIn.value) {
                 if (!loggedIn.value) {
                     navController.navigate(Screen.Login.route)
@@ -127,9 +130,15 @@ private fun NavGraphBuilder.addHomeGraph(
                 },
                 onMenuClicked = {
                     scope.launch { drawerState.open() }
+                },
+                onWebClicked = {
+                    navController.navigate(LeafScreen.Web.createRoute(Screen.Home))
                 }
             )
         }
+    }
+    composable(route = LeafScreen.Web.createRoute(Screen.Home)) {
+        WebScreen(url = "https://www.google.ch")
     }
 }
 

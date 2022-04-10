@@ -15,6 +15,7 @@ fun HomeScreen(
     onDetailClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onMenuClicked: () -> Unit,
+    onWebClicked: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.semantics { contentDescription = "Home Screen" },
@@ -37,6 +38,9 @@ fun HomeScreen(
             OutlinedButton(onClick = onLogoutClick) {
                 Text(text = "Log Out!")
             }
+            OutlinedButton(onClick = onWebClicked) {
+                Text(text = "Go to Web")
+            }
         }
 
     }
@@ -45,5 +49,5 @@ fun HomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen({}, {}, {})
+    HomeScreen({}, {}, {}, {})
 }

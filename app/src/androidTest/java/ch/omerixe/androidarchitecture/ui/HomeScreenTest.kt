@@ -17,19 +17,22 @@ class HomeScreenTest {
     private var detailClicked = false
     private var logoutClicked = false
     private var menuClicked = false
+    private var webClicked = false
 
     @Before
     fun setUp() {
         detailClicked = false
         logoutClicked = false
         menuClicked = false
+        webClicked = false
 
         composeTestRule.setContent {
             AndroidArchitectrureTheme {
                 HomeScreen(
                     onDetailClick = { detailClicked = true },
                     onLogoutClick = { logoutClicked = true },
-                    onMenuClicked = { menuClicked = true }
+                    onMenuClicked = { menuClicked = true },
+                    onWebClicked = { webClicked = true }
                 )
             }
         }
@@ -51,5 +54,11 @@ class HomeScreenTest {
     fun testMenuClick() {
         composeTestRule.onNodeWithContentDescription("Open Menu").performClick()
         assertTrue(menuClicked)
+    }
+
+    @Test
+    fun testWebClick() {
+        composeTestRule.onNodeWithContentDescription("Go to Web").performClick()
+        assertTrue(webClicked)
     }
 }
