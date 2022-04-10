@@ -4,13 +4,13 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.activity.compose.BackHandler
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.viewinterop.AndroidView
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun WebScreen(url: String) {
-    var backEnabled by remember { mutableStateOf(false) }
+fun WebScreen(viewModel: WebScreenViewModel) {
+    val backEnabled = viewModel.webViewClient.backEnabled
     var webView: WebView? = null
 
     AndroidView(
@@ -20,9 +20,9 @@ fun WebScreen(url: String) {
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
-                webViewClient = MyWebViewClient { backEnabled = it }
+                webViewClient = viewModel.webViewClient
                 settings.javaScriptEnabled = true
-                loadUrl(url)
+                loadUrl(viewModel.url)
                 webView = this
             }
         },

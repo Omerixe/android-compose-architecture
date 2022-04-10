@@ -58,7 +58,7 @@ class HomeScreenTest {
 
     @Test
     fun testWebClick() {
-        composeTestRule.onNodeWithContentDescription("Go to Web").performClick()
+        composeTestRule.onNodeWithText("Go to Web").performClick()
         assertTrue(webClicked)
     }
 }

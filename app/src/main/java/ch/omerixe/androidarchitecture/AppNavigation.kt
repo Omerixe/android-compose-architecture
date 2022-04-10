@@ -11,7 +11,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import ch.omerixe.androidarchitecture.ui.*
+import ch.omerixe.androidarchitecture.ui.web.MyWebViewClient
 import ch.omerixe.androidarchitecture.ui.web.WebScreen
+import ch.omerixe.androidarchitecture.ui.web.WebScreenViewModel
+import ch.omerixe.androidarchitecture.ui.web.WebScreenViewModelFactory
 import kotlinx.coroutines.launch
 
 internal sealed class Screen(val title: String, val route: String) {
@@ -138,7 +141,12 @@ private fun NavGraphBuilder.addHomeGraph(
         }
     }
     composable(route = LeafScreen.Web.createRoute(Screen.Home)) {
-        WebScreen(url = "https://www.google.ch")
+        val viewModelFactory = WebScreenViewModelFactory(
+            webViewClient = MyWebViewClient(),
+            url = "https://www.google.ch"
+        )
+        val viewModel: WebScreenViewModel = viewModel(factory = viewModelFactory)
+        WebScreen(viewModel = viewModel)
     }
 }
 
