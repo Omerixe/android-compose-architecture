@@ -47,6 +47,7 @@ internal fun AppNavigation(
 ) {
     //Todo: Is this the right place to save these values?
     val drawerState = rememberDrawerState(DrawerValue.Closed)
+    var drawerGesturesEnabled by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     var currentScreen: Screen by remember {
         mutableStateOf(Screen.Home)
@@ -84,8 +85,10 @@ internal fun AppNavigation(
                 }
             )
         },
-        drawerState = drawerState
+        drawerState = drawerState,
+        gesturesEnabled = drawerGesturesEnabled
     ) {
+        val enableDarawerGestures: (Boolean) -> Unit = { drawerGesturesEnabled = it }
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
@@ -95,9 +98,18 @@ internal fun AppNavigation(
                 loggedIn = mainViewModel.loggedIn,
                 logOut = mainViewModel::logOut,
                 drawerState = drawerState,
+                enableDrawerGestures = enableDarawerGestures,
             )
-            addLoginGraph(navController = navController, logIn = mainViewModel::logIn)
-            addOverviewGraph(navController = navController, drawerState = drawerState)
+            addLoginGraph(
+                navController = navController,
+                logIn = mainViewModel::logIn,
+                enableDrawerGestures = enableDarawerGestures
+            )
+            addOverviewGraph(
+                navController = navController,
+                drawerState = drawerState,
+                enableDrawerGestures = enableDarawerGestures,
+            )
         }
     }
 
@@ -108,6 +120,7 @@ private fun NavGraphBuilder.addHomeGraph(
     loggedIn: MutableState<Boolean>,
     logOut: () -> Unit,
     drawerState: DrawerState,
+    enableDrawerGestures: (Boolean) -> Unit,
 ) {
     navigation(
         route = Screen.Home.route,
@@ -115,7 +128,7 @@ private fun NavGraphBuilder.addHomeGraph(
     ) {
         composable(route = LeafScreen.Home.createRoute(Screen.Home)) {
             val scope = rememberCoroutineScope()
-
+            enableDrawerGestures(true)
 
             LaunchedEffect(loggedIn.value) {
                 if (!loggedIn.value) {
@@ -141,6 +154,7 @@ private fun NavGraphBuilder.addHomeGraph(
         }
     }
     composable(route = LeafScreen.Web.createRoute(Screen.Home)) {
+        enableDrawerGestures(false)
         val viewModelFactory = WebScreenViewModelFactory(
             webViewClient = MyWebViewClient(),
             url = "https://www.google.ch"
@@ -152,13 +166,15 @@ private fun NavGraphBuilder.addHomeGraph(
 
 private fun NavGraphBuilder.addLoginGraph(
     navController: NavHostController,
-    logIn: () -> Unit
+    logIn: () -> Unit,
+    enableDrawerGestures: (Boolean) -> Unit
 ) {
     navigation(
         route = Screen.Login.route,
         startDestination = LeafScreen.Login.createRoute(Screen.Login)
     ) {
         composable(route = LeafScreen.Login.createRoute(Screen.Login)) {
+            enableDrawerGestures(false)
             LoginScreen(
                 onButtonClick = {
                     navController.popBackStack()
@@ -172,11 +188,13 @@ private fun NavGraphBuilder.addLoginGraph(
 private fun NavGraphBuilder.addOverviewGraph(
     navController: NavController,
     drawerState: DrawerState,
+    enableDrawerGestures: (Boolean) -> Unit,
 ) {
     navigation(
         route = Screen.Overview.route,
         startDestination = LeafScreen.Overview.createRoute(Screen.Overview),
     ) {
+        enableDrawerGestures(true)
         composable(route = LeafScreen.Overview.createRoute(Screen.Overview)) {
             val scope = rememberCoroutineScope()
             OverviewScreen(
@@ -190,6 +208,7 @@ private fun NavGraphBuilder.addOverviewGraph(
             arguments = listOf(
                 navArgument("detailId") { type = NavType.StringType }
             )) {
+            enableDrawerGestures(false)
             val detailScreenViewModel: DetailScreenViewModel = viewModel()
             DetailScreen(viewModel = detailScreenViewModel) { navController.popBackStack() }
         }
