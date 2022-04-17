@@ -52,6 +52,7 @@ internal fun AppNavigation(
     var currentScreen: Screen by remember {
         mutableStateOf(Screen.Home)
     }
+    val enableDarawerGestures: (Boolean) -> Unit = { drawerGesturesEnabled = it }
 
     ModalDrawer(
         drawerContent = {
@@ -88,7 +89,6 @@ internal fun AppNavigation(
         drawerState = drawerState,
         gesturesEnabled = drawerGesturesEnabled
     ) {
-        val enableDarawerGestures: (Boolean) -> Unit = { drawerGesturesEnabled = it }
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
@@ -128,7 +128,9 @@ private fun NavGraphBuilder.addHomeGraph(
     ) {
         composable(route = LeafScreen.Home.createRoute(Screen.Home)) {
             val scope = rememberCoroutineScope()
-            enableDrawerGestures(true)
+            scope.launch {
+                enableDrawerGestures(true)
+            }
 
             LaunchedEffect(loggedIn.value) {
                 if (!loggedIn.value) {
@@ -154,7 +156,10 @@ private fun NavGraphBuilder.addHomeGraph(
         }
     }
     composable(route = LeafScreen.Web.createRoute(Screen.Home)) {
-        enableDrawerGestures(false)
+        val scope = rememberCoroutineScope()
+        scope.launch {
+            enableDrawerGestures(false)
+        }
         val viewModelFactory = WebScreenViewModelFactory(
             webViewClient = MyWebViewClient(),
             url = "https://www.google.ch"
@@ -174,7 +179,11 @@ private fun NavGraphBuilder.addLoginGraph(
         startDestination = LeafScreen.Login.createRoute(Screen.Login)
     ) {
         composable(route = LeafScreen.Login.createRoute(Screen.Login)) {
-            enableDrawerGestures(false)
+            val scope = rememberCoroutineScope()
+            scope.launch {
+                enableDrawerGestures(false)
+            }
+
             LoginScreen(
                 onButtonClick = {
                     navController.popBackStack()
@@ -194,9 +203,11 @@ private fun NavGraphBuilder.addOverviewGraph(
         route = Screen.Overview.route,
         startDestination = LeafScreen.Overview.createRoute(Screen.Overview),
     ) {
-        enableDrawerGestures(true)
         composable(route = LeafScreen.Overview.createRoute(Screen.Overview)) {
             val scope = rememberCoroutineScope()
+            scope.launch {
+                enableDrawerGestures(true)
+            }
             OverviewScreen(
                 onButtonClick = {
                     navController.navigate(LeafScreen.Detail.createRoute(Screen.Overview, "abc"))
@@ -208,7 +219,10 @@ private fun NavGraphBuilder.addOverviewGraph(
             arguments = listOf(
                 navArgument("detailId") { type = NavType.StringType }
             )) {
-            enableDrawerGestures(false)
+            val scope = rememberCoroutineScope()
+            scope.launch {
+                enableDrawerGestures(false)
+            }
             val detailScreenViewModel: DetailScreenViewModel = viewModel()
             DetailScreen(viewModel = detailScreenViewModel) { navController.popBackStack() }
         }
