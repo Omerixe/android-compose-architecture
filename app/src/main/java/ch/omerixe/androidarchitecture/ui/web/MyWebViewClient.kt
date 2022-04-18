@@ -7,8 +7,9 @@ import android.webkit.WebViewClient
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import javax.inject.Inject
 
-class MyWebViewClient : WebViewClient() {
+class MyWebViewClient @Inject constructor() : WebViewClient() {
     var backEnabled by mutableStateOf(false)
         private set
 

@@ -1,18 +1,12 @@
 package ch.omerixe.androidarchitecture.ui.web
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class WebScreenViewModel(
-    val webViewClient: MyWebViewClient,
-    val url: String
-) : ViewModel()
-
-class WebScreenViewModelFactory(val webViewClient: MyWebViewClient, val url: String) :
-    ViewModelProvider.Factory {
-
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return modelClass.getConstructor(MyWebViewClient::class.java, String::class.java)
-            .newInstance(webViewClient, url)
-    }
+@HiltViewModel
+class WebScreenViewModel @Inject constructor(
+    val webViewClient: MyWebViewClient
+) : ViewModel() {
+    var url: String? = null
 }

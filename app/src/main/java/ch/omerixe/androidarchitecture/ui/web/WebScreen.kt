@@ -22,7 +22,7 @@ fun WebScreen(viewModel: WebScreenViewModel) {
                 )
                 webViewClient = viewModel.webViewClient
                 settings.javaScriptEnabled = true
-                loadUrl(viewModel.url)
+                loadUrl(viewModel.url ?: "https://www.google.ch")
                 webView = this
             }
         },

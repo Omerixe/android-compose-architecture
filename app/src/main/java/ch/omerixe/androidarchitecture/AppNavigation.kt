@@ -5,16 +5,15 @@ import androidx.compose.material.DrawerValue
 import androidx.compose.material.ModalDrawer
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.runtime.*
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import ch.omerixe.androidarchitecture.ui.*
-import ch.omerixe.androidarchitecture.ui.web.MyWebViewClient
 import ch.omerixe.androidarchitecture.ui.web.WebScreen
 import ch.omerixe.androidarchitecture.ui.web.WebScreenViewModel
-import ch.omerixe.androidarchitecture.ui.web.WebScreenViewModelFactory
 import kotlinx.coroutines.launch
 
 internal sealed class Screen(val title: String, val route: String) {
@@ -160,11 +159,8 @@ private fun NavGraphBuilder.addHomeGraph(
         scope.launch {
             enableDrawerGestures(false)
         }
-        val viewModelFactory = WebScreenViewModelFactory(
-            webViewClient = MyWebViewClient(),
-            url = "https://www.google.ch"
-        )
-        val viewModel: WebScreenViewModel = viewModel(factory = viewModelFactory)
+        val viewModel: WebScreenViewModel = hiltViewModel()
+        viewModel.url = "https://www.google.ch"
         WebScreen(viewModel = viewModel)
     }
 }
